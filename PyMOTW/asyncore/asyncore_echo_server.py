@@ -67,12 +67,9 @@ class EchoHandler(asyncore.dispatcher):
         most recent message received.
         """
         data = self.data_to_write.pop()
-        sent = self.send(data[:self.chunk_size])
-        if sent < len(data):
-            remaining = data[sent:]
-            self.data.to_write.append(remaining)
-        self.logger.debug('handle_write() -> (%d) %r',
-                          sent, data[:sent])
+        # In this case handle_read guarantees that `data` will always be `chunk_size` length
+        sent = self.send(data)
+        self.logger.debug('handle_write() -> (%d) %r', sent, data)
         if not self.writable():
             self.handle_close()
 
